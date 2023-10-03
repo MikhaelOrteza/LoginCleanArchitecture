@@ -15,8 +15,7 @@ import java.beans.PropertyChangeListener;
 
 public class SignupView extends JPanel implements ActionListener, PropertyChangeListener {
     public final String viewName = "sign up";
-
-    private final SignupViewModel signupViewModel;
+    private final SignupViewModel signupViewModel; // Stores the state of the sign up state.
     private final JTextField usernameInputField = new JTextField(15);
     private final JPasswordField passwordInputField = new JPasswordField(15);
     private final JPasswordField repeatPasswordInputField = new JPasswordField(15);
@@ -47,7 +46,21 @@ public class SignupView extends JPanel implements ActionListener, PropertyChange
         cancel = new JButton(signupViewModel.CANCEL_BUTTON_LABEL);
         buttons.add(cancel);
 
-        signUp.addActionListener(this);
+        signUp.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent evt) {
+                if (evt.getSource().equals(signUp)){
+                    /* ORIGINAL VERSION
+                    signupController.execute(usernameInputField.getText(),
+                            String.valueOf(passwordInputField.getPassword()),
+                            String.valueOf(repeatPasswordInputField.getPassword()));
+                     */
+                    //Rewrite the code here:
+                    signupController.execute(signupViewModel.getState().getUsername(),
+                            signupViewModel.getState().getPassword(), signupViewModel.getState().getRepeatPassword());
+                }
+            }
+        });
         cancel.addActionListener(this);
 
         // This makes a new KeyListener object and makes it listen to keystrokes
@@ -55,6 +68,8 @@ public class SignupView extends JPanel implements ActionListener, PropertyChange
         // here that is a subclass of KeyListener. Notice how it has access to
         // instance variables in the enclosing class.
         usernameInputField.addKeyListener(new KeyListener() {
+            //NOTES: "new KeyListener()" is an anonymous subclass of Key Listener.
+            //When you initliaze a key, this method specifies how you should react to a key stroke.
             @Override
             public void keyTyped(KeyEvent e) {
                 SignupState currentState = signupViewModel.getState();
@@ -68,6 +83,39 @@ public class SignupView extends JPanel implements ActionListener, PropertyChange
             @Override
             public void keyReleased(KeyEvent e) {}
         });
+        passwordInputField.addKeyListener(new KeyListener() {
+            @Override
+            public void keyTyped(KeyEvent e) { //Updates the shown password in the sign up view model.
+                SignupState currentState = signupViewModel.getState();
+                currentState.setPassword(passwordInputField.getText());
+                signupViewModel.setState(currentState);
+            }
+            @Override
+            public void keyPressed(KeyEvent e) {
+            }
+            @Override
+            public void keyReleased(KeyEvent e) {
+            }
+        });
+        repeatPasswordInputField.addKeyListener(new KeyListener() {
+            @Override
+            public void keyTyped(KeyEvent e) {
+                SignupState currentState = signupViewModel.getState();
+                currentState.setRepeatPassword(repeatPasswordInputField.getText());
+                signupViewModel.setState(currentState);
+            }
+
+            @Override
+            public void keyPressed(KeyEvent e) {
+
+            }
+
+            @Override
+            public void keyReleased(KeyEvent e) {
+
+            }
+        });
+
         this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 
         this.add(title);

@@ -20,6 +20,7 @@ public class FileUserDataAccessObject implements UserSignupDataAccessInterface {
     private UserFactory userFactory;
 
     public FileUserDataAccessObject(String csvPath, UserFactory userFactory) throws IOException {
+        // "throws IOException" tells us that the method may raise an IOexception when this method is called.
         this.userFactory = userFactory;
 
         csvFile = new File(csvPath);
